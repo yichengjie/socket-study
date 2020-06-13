@@ -1,4 +1,4 @@
-package com.yicj.study;
+package com.yicj.study.tcp;
 
 import java.io.*;
 import java.net.Inet4Address;

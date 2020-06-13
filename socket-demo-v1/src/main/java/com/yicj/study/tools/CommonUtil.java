@@ -20,8 +20,10 @@ public class CommonUtil {
         int b = bytes2Int(bytes);
         System.out.println(b);
 
+
         ByteBuffer buffer = ByteBuffer.wrap(bytes) ;
         int anInt = buffer.getInt();
+        System.out.println("position : " + buffer.position());
         System.out.println(anInt);
 
         new String() ;
