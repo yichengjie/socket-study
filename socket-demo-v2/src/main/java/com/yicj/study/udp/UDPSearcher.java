@@ -102,7 +102,7 @@ public class UDPSearcher {
                 ds = new DatagramSocket(listenPort) ;
                 while (!done){
                     // 构建接收实体
-                    final byte [] buf = new byte[512] ;
+                    final byte [] buf = new byte[256] ;
                     DatagramPacket receivePack = new DatagramPacket(buf,buf.length) ;
                     // 接收
                     ds.receive(receivePack);
@@ -118,7 +118,7 @@ public class UDPSearcher {
                     String sn = MessageCreator.parseSn(data) ;
                     if (sn !=null){
                       Device  device = new Device(port, ip, sn) ;
-                      devices.addAll(devices) ;
+                      devices.add(device) ;
                     }
                 }
             }catch (Exception ignore){
