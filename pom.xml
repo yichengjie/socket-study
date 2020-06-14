@@ -10,6 +10,7 @@
     <modules>
         <module>socket-demo-v1</module>
         <module>socket-demo-v2</module>
+        <module>socket-demo-v3</module>
     </modules>
     <packaging>pom</packaging>
 
