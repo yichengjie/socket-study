@@ -61,6 +61,7 @@ public class TCPServer {
                 try {
                     client = server.accept();
                 } catch (IOException e) {
+                    e.printStackTrace();
                     continue;
                 }
                 //客户端构建异步线程
@@ -107,6 +108,7 @@ public class TCPServer {
                         socketOutput.println("bye");
                     }else {
                         //打印到屏幕，并回送数据长度
+                        System.out.println(str);
                         socketOutput.println("回送：" + str.length());
                     }
                 }while (flag) ;
