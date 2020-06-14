@@ -20,20 +20,20 @@ import java.util.concurrent.Executors;
  */
 public class TCPServer implements ClientHandler.ClientHandlerCallback {
     private final int port ;
-    private ClientListener mListener ;
+    private ClientListener listener;
     private List<ClientHandler> clientHandlerList = new ArrayList<>() ;
-    private final ExecutorService forwardingThreadPoolExecotor ;
+    private final ExecutorService forwardingThreadPoolExecutor;
 
 
     public TCPServer(int port) {
         this.port = port ;
-        this.forwardingThreadPoolExecotor = Executors.newSingleThreadExecutor() ;
+        this.forwardingThreadPoolExecutor = Executors.newSingleThreadExecutor() ;
     }
 
     public boolean start(){
         try {
             ClientListener listener = new ClientListener(port) ;
-            mListener = listener ;
+            this.listener = listener ;
             listener.start() ;
         }catch (IOException e){
             e.printStackTrace();
@@ -43,8 +43,8 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
     }
 
     public void stop(){
-        if (mListener != null){
-            mListener.exit() ;
+        if (listener != null){
+            listener.exit() ;
         }
         synchronized (this){
             for (ClientHandler clientHandler: clientHandlerList){
@@ -53,7 +53,7 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
             clientHandlerList.clear();
         }
         // 停止线程池
-        forwardingThreadPoolExecotor.shutdownNow();
+        forwardingThreadPoolExecutor.shutdownNow();
     }
 
     public synchronized void broadcast(String str) {
@@ -71,7 +71,7 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
     public synchronized void onNewMessageArrived(ClientHandler handler, String msg) {
         //打印到屏幕，并回送数据长度
         System.out.println("Received-" + handler.getClientInfo() +": " + msg);
-        this.forwardingThreadPoolExecotor.execute(()->{
+        this.forwardingThreadPoolExecutor.execute(()->{
             for (ClientHandler clientHandler: clientHandlerList){
                 if (clientHandler.equals(handler)){
                     // 跳过自己
