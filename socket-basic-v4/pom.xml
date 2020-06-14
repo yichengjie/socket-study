@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>socket-demo-v4</artifactId>
+    <artifactId>socket-basic-v4</artifactId>
 
     <dependencies>
         <dependency>
