@@ -13,6 +13,7 @@
         <module>socket-basic-v3</module>
         <module>socket-basic-v4</module>
 		<module>socket-basic-v5</module>
+		<module>chat-room-v1</module>
     </modules>
     <packaging>pom</packaging>
 
