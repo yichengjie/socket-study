@@ -40,13 +40,14 @@ public class Client {
     }
 
 
-    private static void write(TCPClient client) throws IOException {
+    private static void write(TCPClient tcpClient) throws IOException {
         InputStream in = System.in ;
         BufferedReader input = new BufferedReader(new InputStreamReader(in)) ;
         do {
             // 键盘读取一行
             String str = input.readLine() ;
             // 发送到服务器
+            tcpClient.send(str);
             if ("00bye00".equalsIgnoreCase(str)){
                 break;
             }

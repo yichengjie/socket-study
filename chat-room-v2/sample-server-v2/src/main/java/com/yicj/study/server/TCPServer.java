@@ -117,6 +117,7 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
                         if (done){
                             break;
                         }
+                        continue;
                     }
                     Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
                     while (iter.hasNext()){
