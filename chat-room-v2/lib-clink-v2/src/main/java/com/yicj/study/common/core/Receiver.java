@@ -1,4 +1,4 @@
-package net.qiujuer.library.clink.core;
+package com.yicj.study.common.core;
 
 import java.io.Closeable;
 import java.io.IOException;
