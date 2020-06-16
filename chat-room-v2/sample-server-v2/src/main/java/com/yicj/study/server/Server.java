@@ -1,5 +1,7 @@
 package com.yicj.study.server;
 
+import com.yicj.study.common.core.IoContext;
+import com.yicj.study.common.impl.IoSelectorProvider;
 import com.yicj.study.constants.TCPConstants;
 
 import java.io.BufferedReader;
@@ -18,6 +20,11 @@ import java.io.InputStreamReader;
 public class Server {
     public static void main(String[] args) throws IOException {
 
+        IoContext
+                .setup()
+                .ioProvider(new IoSelectorProvider())
+                .start() ;
+
         TCPServer tcpServer = new TCPServer(TCPConstants.PORT_SERVER) ;
         boolean isSucceed = tcpServer.start() ;
         if (!isSucceed){
@@ -34,5 +41,6 @@ public class Server {
         }while (!"00bye00".equalsIgnoreCase(str)) ;
         UDPProvider.stop() ;
         tcpServer.stop() ;
+        IoContext.close();
     }
 }
