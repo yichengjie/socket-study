@@ -15,6 +15,7 @@
 		<module>socket-basic-v5</module>
 		<module>chat-room-v1</module>
 		<module>chat-room-v2</module>
+        <module>nio-basic-v1</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -26,8 +26,11 @@ public class ByteBufferDemo {
 
         System.out.println(buffer.position() +" , " + buffer.limit());
         int a = buffer.getInt();
+        System.out.println("buffer.hasRemaining() : " +buffer.hasRemaining());
         int b = buffer.getInt() ;
+        System.out.println("buffer.hasRemaining() : " +buffer.hasRemaining());
         int c = buffer.getInt() ;
+        System.out.println("buffer.hasRemaining() : " +buffer.hasRemaining());
         //int d = buffer.getInt() ;
 
         System.out.println(a);
