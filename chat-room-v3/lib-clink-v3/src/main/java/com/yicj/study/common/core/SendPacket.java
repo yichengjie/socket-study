@@ -10,7 +10,7 @@ package com.yicj.study.common.core;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public abstract class SendPacket {
+public abstract class SendPacket extends Packet {
     // 是否已取消
     private boolean isCanceled ;
     //发送的内容

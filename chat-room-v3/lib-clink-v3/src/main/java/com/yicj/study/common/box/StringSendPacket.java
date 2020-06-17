@@ -2,6 +2,8 @@ package com.yicj.study.common.box;
 
 import com.yicj.study.common.core.SendPacket;
 
+import java.io.IOException;
+
 /**
  * ClassName: StringSendPacket
  * Description: TODO(描述)
@@ -16,10 +18,16 @@ public class StringSendPacket extends SendPacket {
 
     public StringSendPacket(String msg) {
         this.bytes = msg.getBytes();
+        this.length = bytes.length ;
     }
 
     @Override
     public byte[] bytes() {
         return bytes;
+    }
+
+    @Override
+    public void close() throws IOException {
+
     }
 }

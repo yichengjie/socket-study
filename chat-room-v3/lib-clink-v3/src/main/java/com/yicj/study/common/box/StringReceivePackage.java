@@ -3,6 +3,8 @@ package com.yicj.study.common.box;
 import com.yicj.study.common.core.ReceivePacket;
 import com.yicj.study.common.core.Receiver;
 
+import java.io.IOException;
+
 /**
  * ClassName: StringReceivePackage
  * Description: TODO(描述)
@@ -32,4 +34,8 @@ public class StringReceivePackage extends ReceivePacket {
         return new String(buffer) ;
     }
 
+    @Override
+    public void close() throws IOException {
+
+    }
 }

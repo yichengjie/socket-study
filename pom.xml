@@ -13,9 +13,10 @@
         <module>socket-basic-v3</module>
         <module>socket-basic-v4</module>
 		<module>socket-basic-v5</module>
+		<module>nio-basic-v1</module>
 		<module>chat-room-v1</module>
 		<module>chat-room-v2</module>
-        <module>nio-basic-v1</module>
+		<module>chat-room-v3</module>
     </modules>
     <packaging>pom</packaging>
 
