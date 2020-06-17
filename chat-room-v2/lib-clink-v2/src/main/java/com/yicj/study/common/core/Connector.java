@@ -52,6 +52,11 @@ public class Connector implements Closeable ,SocketChannelAdapter.OnChannelStatu
     }
 
 
+    public void send(){
+
+    }
+
+
     private void readNextMessage(){
         if (receiver!=null){
             try {
