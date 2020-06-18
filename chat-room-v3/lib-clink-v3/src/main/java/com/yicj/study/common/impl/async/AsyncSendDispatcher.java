@@ -6,6 +6,7 @@ import com.yicj.study.common.core.SendPacket;
 import com.yicj.study.common.core.Sender;
 import com.yicj.study.common.utils.CloseUtils;
 
+import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -77,6 +78,53 @@ public class AsyncSendDispatcher implements SendDispatcher {
     }
 
     private void sendCurrentPacket() {
-        IoArgs
+        IoArgs args = ioArgs ;
+        // 开始，清理
+        args.startWriting();
+        if (position >= total){
+            sendNextPacket();
+            return;
+        }else if (position == 0){
+            // 首包，需要携带长度信息
+            args.writeLength(total) ;
+        }
+        byte [] bytes = packetTemp.bytes() ;
+        // 把bytes的数据写入到IoArgs
+        int count = args.readFrom(bytes,position) ;
+        position += count ;
+        //完成封装
+        args.finishWriting();
+        // 真正的发送
+        try {
+            sender.sendAsync(args, ioArgsEventListener) ;
+        } catch (IOException e) {
+            closeAndNotify() ;
+        }
     }
+
+    private void closeAndNotify() {
+        CloseUtils.close();
+    }
+
+
+    @Override
+    public void close() throws IOException {
+
+    }
+
+    // 进度的回调
+    private final IoArgs.IoArgsEventListener ioArgsEventListener = new IoArgs.IoArgsEventListener() {
+        @Override
+        public void onStarted(IoArgs args) {
+
+        }
+
+        @Override
+        public void onCompleted(IoArgs args) {
+            // 继续发送当前包
+            sendCurrentPacket();
+        }
+    } ;
+
+
 }

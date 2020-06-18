@@ -1,5 +1,7 @@
 package com.yicj.study.common.core;
 
+import java.io.Closeable;
+
 /**
  * 发送数据的调度者
  * 缓存所有需要发送的数据，通过队列对数据进行发送
@@ -12,7 +14,7 @@ package com.yicj.study.common.core;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public interface SendDispatcher {
+public interface SendDispatcher extends Closeable {
 
     /**
      * 发送一份数据
