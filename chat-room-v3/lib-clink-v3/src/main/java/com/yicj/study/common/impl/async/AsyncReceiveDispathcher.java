@@ -28,6 +28,11 @@ public class AsyncReceiveDispathcher implements ReceiveDispatcher {
     private int total ;
     private int position ;
 
+    public AsyncReceiveDispathcher(Receiver receiver, ReceivePacketCallback callback) {
+        this.receiver = receiver;
+        this.callback = callback;
+    }
+
 
     @Override
     public void start() {

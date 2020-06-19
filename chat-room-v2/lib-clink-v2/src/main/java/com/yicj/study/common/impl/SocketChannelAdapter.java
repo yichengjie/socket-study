@@ -26,45 +26,8 @@ public class SocketChannelAdapter implements Sender , Receiver, Closeable {
     private final SocketChannel channel ;
     private final IoProvider ioProvider ;
     private final OnChannelStatusChangedListener listener ;
-
     private IoArgs.IoArgsEventListener receiveIoEventListener ;
     private IoArgs.IoArgsEventListener sendIoEventListener ;
-
-    private final IoProvider.HandleInputCallback inputCallback = new IoProvider.HandleInputCallback() {
-        @Override
-        protected void canProviderInput() {
-            if (isClosed.get()){
-                return;
-            }
-            IoArgs args = new IoArgs() ;
-            IoArgs.IoArgsEventListener listener = SocketChannelAdapter.this.receiveIoEventListener ;
-            if (listener !=null){
-                listener.onStarted(args);
-            }
-            // 具体的读取操作
-            try {
-                if (args.read(channel) > 0 && listener != null){
-                    //读取完成回调
-                    listener.onCompleted(args);
-                }else {
-                    throw new IOException("Cannot read any data!") ;
-                }
-            }catch (IOException ignore){
-                // 如果发生异常则关闭自己
-                CloseUtils.close(SocketChannelAdapter.this);
-            }
-        }
-    } ;
-    private final IoProvider.HandleOutputCallback outputCallback = new IoProvider.HandleOutputCallback() {
-        @Override
-        protected void canProviderOutput(Object attach) {
-            if (isClosed.get()){
-                return;
-            }
-            sendIoEventListener.onCompleted(null);
-        }
-    } ;
-
 
     public SocketChannelAdapter(SocketChannel channel, IoProvider ioProvider,
             OnChannelStatusChangedListener listener) throws IOException {
@@ -111,4 +74,41 @@ public class SocketChannelAdapter implements Sender , Receiver, Closeable {
     public interface OnChannelStatusChangedListener{
         void onChannelClosed(SocketChannel channel) ;
     }
+
+
+    private final IoProvider.HandleInputCallback inputCallback = new IoProvider.HandleInputCallback() {
+        @Override
+        protected void canProviderInput() {
+            if (isClosed.get()){
+                return;
+            }
+            IoArgs args = new IoArgs() ;
+            IoArgs.IoArgsEventListener listener = SocketChannelAdapter.this.receiveIoEventListener ;
+            if (listener !=null){
+                listener.onStarted(args);
+            }
+            // 具体的读取操作
+            try {
+                if (args.read(channel) > 0 && listener != null){
+                    //读取完成回调
+                    listener.onCompleted(args);
+                }else {
+                    throw new IOException("Cannot read any data!") ;
+                }
+            }catch (IOException ignore){
+                // 如果发生异常则关闭自己
+                CloseUtils.close(SocketChannelAdapter.this);
+            }
+        }
+    } ;
+    private final IoProvider.HandleOutputCallback outputCallback = new IoProvider.HandleOutputCallback() {
+        @Override
+        protected void canProviderOutput(Object attach) {
+            if (isClosed.get()){
+                return;
+            }
+            sendIoEventListener.onCompleted(null);
+        }
+    } ;
+
 }

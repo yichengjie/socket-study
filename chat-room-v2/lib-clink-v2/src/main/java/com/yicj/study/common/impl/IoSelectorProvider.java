@@ -83,8 +83,6 @@ public class IoSelectorProvider implements IoProvider {
                     }
                 }
             }
-
-
         } ;
         thread.setPriority(Thread.MAX_PRIORITY);
         thread.start();

@@ -2,12 +2,10 @@ package com.yicj.study.common.core;
 
 
 import com.yicj.study.common.impl.SocketChannelAdapter;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.UUID;
-
 
 /** 
  * @title: 代表一个连接，所有的操作都是基于一个连接
@@ -26,21 +24,6 @@ public class Connector implements Closeable ,SocketChannelAdapter.OnChannelStatu
     private Sender sender;
     // 接收者
     private Receiver receiver;
-
-    private IoArgs.IoArgsEventListener echoReceiveListener = new IoArgs.IoArgsEventListener() {
-        @Override
-        public void onStarted(IoArgs args) {
-
-        }
-
-        @Override
-        public void onCompleted(IoArgs args) {
-            //打印
-            onReceiveNewMessage(args.bufferString()) ;
-            //读取下一条数据
-            readNextMessage();
-        }
-    } ;
 
     public void setup(SocketChannel socketChannel) throws IOException {
         this.channel = socketChannel;
@@ -81,4 +64,19 @@ public class Connector implements Closeable ,SocketChannelAdapter.OnChannelStatu
 
         System.out.println(key.toString() + " : " + str);
     }
+
+    private IoArgs.IoArgsEventListener echoReceiveListener = new IoArgs.IoArgsEventListener() {
+        @Override
+        public void onStarted(IoArgs args) {
+
+        }
+
+        @Override
+        public void onCompleted(IoArgs args) {
+            //打印
+            onReceiveNewMessage(args.bufferString()) ;
+            //读取下一条数据
+            readNextMessage();
+        }
+    } ;
 }
