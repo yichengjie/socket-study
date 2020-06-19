@@ -55,7 +55,7 @@ public class ClientHandler {
 
     // 启动读取线程
     public void readToPrint() {
-        readHandler.start();
+        new Thread(readHandler).start();
     }
 
     public interface ClientHandlerCallback {
@@ -65,13 +65,15 @@ public class ClientHandler {
         void onNewMessageArrived(ClientHandler handler, String msg) ;
     }
 
-    class ClientReadHandler extends Thread{
+
+    class ClientReadHandler implements Runnable{
         private boolean done =false ;
         private final InputStream inputStream ;
 
         public ClientReadHandler(InputStream inputStream) {
             this.inputStream = inputStream;
         }
+
         @Override
         public void run() {
             try {

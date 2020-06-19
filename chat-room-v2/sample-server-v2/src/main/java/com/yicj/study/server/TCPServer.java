@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public class TCPServer implements ClientHandler.ClientHandlerCallback {
+public class TCPServer {
     private final int port ;
     private ClientListener listener;
     private List<ClientHandler> clientHandlerList = new ArrayList<>() ;
@@ -30,10 +30,9 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
     private Selector selector;
     private ServerSocketChannel server ;
 
-
-
     public TCPServer(int port) {
         this.port = port ;
+        // 转发线程池
         this.forwardingThreadPoolExecutor = Executors.newSingleThreadExecutor() ;
     }
 
@@ -82,27 +81,6 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
         }
     }
 
-    @Override
-    public synchronized void  onSelfClosed(ClientHandler handler) {
-        clientHandlerList.remove(handler) ;
-    }
-
-    @Override
-    public synchronized void onNewMessageArrived(ClientHandler handler, String msg) {
-        //打印到屏幕，并回送数据长度
-        //System.out.println("Received-" + handler.getClientInfo() +": " + msg);
-        this.forwardingThreadPoolExecutor.execute(()->{
-            for (ClientHandler clientHandler: clientHandlerList){
-                if (clientHandler.equals(handler)){
-                    // 跳过自己
-                    continue;
-                }
-                //对其他客户端发送消息
-                clientHandler.send(msg);
-            }
-        });
-    }
-
     private class ClientListener extends Thread{
         private boolean done = false ;
 
@@ -134,8 +112,7 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
                             SocketChannel socketChannel = serverSocketChannel.accept();
                             try {
                                 //客户端构建异步线程
-                                ClientHandler clientHandler = new ClientHandler(socketChannel,
-                                        TCPServer.this);
+                                ClientHandler clientHandler = new ClientHandler(socketChannel, clientHandlerCallback);
                                 // 添加到列表中
                                 synchronized (TCPServer.this){
                                     clientHandlerList.add(clientHandler);
@@ -160,5 +137,29 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
             selector.wakeup() ;
         }
     }
+
+
+    private ClientHandler.ClientHandlerCallback clientHandlerCallback = new ClientHandler.ClientHandlerCallback() {
+        @Override
+        public synchronized void  onSelfClosed(ClientHandler handler) {
+            clientHandlerList.remove(handler) ;
+        }
+
+        @Override
+        public synchronized void onNewMessageArrived(ClientHandler handler, String msg) {
+            //打印到屏幕，并回送数据长度
+            //System.out.println("Received-" + handler.getClientInfo() +": " + msg);
+            forwardingThreadPoolExecutor.execute(()->{
+                for (ClientHandler clientHandler: clientHandlerList){
+                    if (clientHandler.equals(handler)){
+                        // 跳过自己
+                        continue;
+                    }
+                    //对其他客户端发送消息
+                    clientHandler.send(msg);
+                }
+            });
+        }
+    } ;
 
 }

@@ -110,8 +110,16 @@ public class IoArgs {
         buffer.putInt(total) ;
     }
 
-    public void readLength(){
-        buffer.getInt() ;
+    public int readLength(){
+        return buffer.getInt() ;
+    }
+
+    /**
+     * 容量
+     * @return
+     */
+    public int capacity() {
+        return buffer.capacity() ;
     }
 
 

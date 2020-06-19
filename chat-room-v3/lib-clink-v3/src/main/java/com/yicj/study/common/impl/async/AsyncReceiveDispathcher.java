@@ -1,9 +1,11 @@
 package com.yicj.study.common.impl.async;
 
+import com.yicj.study.common.box.StringReceivePackage;
 import com.yicj.study.common.core.IoArgs;
 import com.yicj.study.common.core.ReceiveDispatcher;
 import com.yicj.study.common.core.ReceivePacket;
 import com.yicj.study.common.core.Receiver;
+import com.yicj.study.common.utils.CloseUtils;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,14 +32,17 @@ public class AsyncReceiveDispathcher implements ReceiveDispatcher {
 
     public AsyncReceiveDispathcher(Receiver receiver, ReceivePacketCallback callback) {
         this.receiver = receiver;
+        this.receiver.setReceiveListener(ioArgsEventListener);
         this.callback = callback;
     }
 
 
     @Override
     public void start() {
-
+        registerReceive() ;
     }
+
+
 
     @Override
     public void stop() {
@@ -46,6 +51,82 @@ public class AsyncReceiveDispathcher implements ReceiveDispatcher {
 
     @Override
     public void close() throws IOException {
+        if (isClosed.compareAndSet(false,true)){
+            ReceivePacket packet = this.packetTemp ;
+            if (packet !=null){
+                packetTemp = null ;
+                CloseUtils.close(packet);
+            }
+        }
+    }
+
+    private void registerReceive() {
+        try {
+            receiver.receiveAsync(ioArgs) ;
+        } catch (IOException e) {
+            closeAndNotify() ;
+        }
+    }
+
+    private void closeAndNotify() {
+        CloseUtils.close(this);
 
     }
+
+    /**
+     * 解析数据到Packet
+     * @param args
+     */
+    private void assemblePacket(IoArgs args) {
+        if (packetTemp == null){
+            int length = args.readLength();
+            packetTemp = new StringReceivePackage(length) ;
+            buffer = new byte[length] ;
+            total = length ;
+            position = 0 ;
+        }
+        int count = args.writeTo(buffer,0) ;
+        if (count > 0){
+            packetTemp.save(buffer,count);
+            // 检查是否已完成一份Packet接收
+            if (position == total){
+                completePacket() ;
+                packetTemp = null ;
+            }
+        }
+
+    }
+
+    /**
+     * 完成数据接收操作
+     */
+    private void completePacket() {
+        ReceivePacket packet = this.packetTemp ;
+        CloseUtils.close(packet);
+        callback.onReceivePacketComplete(packet);
+    }
+
+    private IoArgs.IoArgsEventListener ioArgsEventListener = new IoArgs.IoArgsEventListener() {
+        @Override
+        public void onStarted(IoArgs args) {
+            int receiveSize  ;
+            if (packetTemp == null){
+                receiveSize = 4 ;
+            }else {
+                // 还需要接收的大小total - position
+                receiveSize = Math.min(total- position, args.capacity()) ;
+            }
+            //设置本次接收数据大小
+            args.limit(receiveSize);
+        }
+
+        @Override
+        public void onCompleted(IoArgs args) {
+            // 解析数据
+            assemblePacket(args) ;
+            //继续接收下一条数据
+            registerReceive();
+        }
+    } ;
+
 }

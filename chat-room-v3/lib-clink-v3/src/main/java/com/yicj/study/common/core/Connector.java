@@ -4,6 +4,9 @@ package com.yicj.study.common.core;
 import com.yicj.study.common.box.StringReceivePackage;
 import com.yicj.study.common.box.StringSendPacket;
 import com.yicj.study.common.impl.SocketChannelAdapter;
+import com.yicj.study.common.impl.async.AsyncReceiveDispathcher;
+import com.yicj.study.common.impl.async.AsyncSendDispatcher;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
@@ -12,6 +15,7 @@ import java.util.UUID;
 
 /** 
  * @title: 代表一个连接，所有的操作都是基于一个连接
+ *         发送和接收都封装到Connector中
  * @description: TODO(描述)
  * @params
  * @author yicj
@@ -39,6 +43,10 @@ public class Connector implements Closeable ,SocketChannelAdapter.OnChannelStatu
         SocketChannelAdapter adapter = new SocketChannelAdapter(channel,context.getIoProvider(),this) ;
         this.sender = adapter ;
         this.receiver = adapter ;
+        this.sendDispatcher = new AsyncSendDispatcher(sender) ;
+        this.receiveDispatcher = new AsyncReceiveDispathcher(receiver, receivePacketCallback) ;
+        // 启动接收
+        receiveDispatcher.start();
     }
 
     public void send(String msg){
@@ -49,7 +57,11 @@ public class Connector implements Closeable ,SocketChannelAdapter.OnChannelStatu
 
     @Override
     public void close() throws IOException {
-
+        receiveDispatcher.close();
+        sendDispatcher.close();
+        sender.close();
+        receiver.close();
+        channel.close();
     }
 
     @Override
