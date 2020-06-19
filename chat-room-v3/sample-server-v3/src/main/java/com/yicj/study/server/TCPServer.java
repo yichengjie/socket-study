@@ -129,6 +129,7 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
                         // 检查当前key的状态是否是我们关注的
                         // 客户端到达状态
                         if (key.isAcceptable()){
+                            System.out.println("成功建立客户端连接......");
                             ServerSocketChannel serverSocketChannel = (ServerSocketChannel)key.channel();
                             // 非阻塞状态拿到客户端连接
                             SocketChannel socketChannel = serverSocketChannel.accept();
