@@ -118,12 +118,10 @@ public class SocketChannelAdapter implements Sender , Receiver, Closeable {
             if (isClosed.get()) {
                 return;
             }
-
             IoArgs args = getAttach();
             IoArgs.IoArgsEventListener listener = sendIoEventListener;
-
+            //重置limit等值，然后读取数据
             listener.onStarted(args);
-
             try {
                 // 具体的读取操作
                 if (args.writeTo(channel) > 0) {

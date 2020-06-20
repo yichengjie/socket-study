@@ -112,8 +112,11 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher {
         public void onStarted(IoArgs args) {
             int receiveSize;
             if (packetTemp == null) {
+                // ioArgs 首次接收数据的buffer长度设置为4
                 receiveSize = 4;
             } else {
+                // ioArgus非首次接收数据时
+                // total - position为数据包剩余总字节数，与args的总容量比较大小，取较小值
                 receiveSize = Math.min(total - position, args.capacity());
             }
             // 设置本次接收数据大小
