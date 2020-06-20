@@ -14,6 +14,6 @@ public interface ReceiveDispatcher extends Closeable {
 
     // 接收完成时的回调
     interface ReceivePacketCallback{
-        void onReceivePacketComplete(ReceivePacket packet) ;
+        void onReceivePacketCompleted(ReceivePacket packet) ;
     }
 }

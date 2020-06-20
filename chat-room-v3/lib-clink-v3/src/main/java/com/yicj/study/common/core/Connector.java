@@ -71,14 +71,10 @@ public class Connector implements Closeable ,SocketChannelAdapter.OnChannelStatu
     }
 
 
-    private ReceiveDispatcher.ReceivePacketCallback receivePacketCallback = new ReceiveDispatcher.ReceivePacketCallback() {
-
-        @Override
-        public void onReceivePacketComplete(ReceivePacket packet) {
-            if (packet instanceof StringReceivePacket) {
-                String msg = ((StringReceivePacket) packet).string();
-                onReceiveNewMessage(msg);
-            }
+    private ReceiveDispatcher.ReceivePacketCallback receivePacketCallback = packet -> {
+        if (packet instanceof StringReceivePacket) {
+            String msg = ((StringReceivePacket) packet).string();
+            onReceiveNewMessage(msg);
         }
     };
 }
