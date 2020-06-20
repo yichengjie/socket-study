@@ -29,9 +29,23 @@ public class IoArgs {
 
     /**
      * 写入数据到bytes中
+     * @param bytes  装数据的buffer
+     * @param offset 从
+     * @return
      */
     public int writeTo(byte[] bytes, int offset) {
+        // byte.length - offset为数组中剩余空间数
+        // buffer.remaining() 为缓存区中还剩余的字节数
+        // 取【字节数组剩余空间长度】与【缓存区剩余字节数】中较小的作为待读取字节数
+        // buffer中可能包含下一个数据包的数组
         int size = Math.min(bytes.length - offset, buffer.remaining());
+        // 从缓冲区中读取字节到bytes数组中
+        /**
+         * 参数：
+         *   dst - 向其中写入字节的数组
+         *   offset - 要写入的第一个字节在数组中的偏移量；必须为非负且不大于 dst.length
+         *   length - 要写入到给定数组中的字节的最大数量；必须为非负且不大于 dst.length - offset
+         */
         buffer.get(bytes, offset, size);
         return size;
     }
@@ -41,7 +55,6 @@ public class IoArgs {
      */
     public int readFrom(SocketChannel channel) throws IOException {
         startWriting();
-
         int bytesProduced = 0;
         while (buffer.hasRemaining()) {
             int len = channel.read(buffer);
@@ -50,7 +63,6 @@ public class IoArgs {
             }
             bytesProduced += len;
         }
-
         finishWriting();
         return bytesProduced;
     }

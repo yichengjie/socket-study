@@ -26,6 +26,14 @@ public class StringReceivePacket extends ReceivePacket {
 
     @Override
     public void save(byte[] bytes, int count) {
+        /**
+         * 参数1：原数组
+         * 参数2：原数组起始位置
+         * ---------------------
+         * 参数3：目标数组
+         * 参数4：目标数组起始位置
+         * 参数5：复制数据长度
+         */
         System.arraycopy(bytes,0, buffer, position, count);
         position += count ;
     }

@@ -77,7 +77,9 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher {
      */
     private void assemblePacket(IoArgs args) {
         if (packetTemp == null) {
+            // 发送过来的数据长度
             int length = args.readLength();
+            // 本次发送的数据包
             packetTemp = new StringReceivePacket(length);
             buffer = new byte[length];
             total = length;
@@ -87,7 +89,6 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher {
         if (count > 0) {
             packetTemp.save(buffer, count);
             position += count;
-
             // 检查是否已完成一份Packet接收
             if (position == total) {
                 completePacket();

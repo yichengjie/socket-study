@@ -58,6 +58,10 @@ public class IoSelectorProvider implements IoProvider {
         startWrite();
     }
 
+
+    /**
+     * 接收到数据的时候，取出之前每个连接注册测inputCallback并执行
+     */
     private void startRead() {
         Thread thread = new Thread("Clink IoSelectorProvider ReadSelector Thread") {
             @Override

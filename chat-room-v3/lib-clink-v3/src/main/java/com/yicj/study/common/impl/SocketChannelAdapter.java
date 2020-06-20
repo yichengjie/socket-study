@@ -46,14 +46,13 @@ public class SocketChannelAdapter implements Sender , Receiver, Closeable {
         receiveIoEventListener = listener;
     }
 
+
     @Override
     public boolean receiveAsync(IoArgs args) throws IOException {
         if (isClosed.get()) {
             throw new IOException("Current channel is closed!");
         }
-
         receiveArgsTemp = args;
-
         return ioProvider.registerInput(channel, inputCallback);
     }
 
@@ -82,16 +81,18 @@ public class SocketChannelAdapter implements Sender , Receiver, Closeable {
         }
     }
 
+
+    /**
+     * 接收到数据时的回调函数
+     */
     private final IoProvider.HandleInputCallback inputCallback = new IoProvider.HandleInputCallback() {
         @Override
         protected void canProviderInput() {
             if (isClosed.get()) {
                 return;
             }
-
             IoArgs args = receiveArgsTemp;
             IoArgs.IoArgsEventListener listener = SocketChannelAdapter.this.receiveIoEventListener;
-
             listener.onStarted(args);
 
             try {
