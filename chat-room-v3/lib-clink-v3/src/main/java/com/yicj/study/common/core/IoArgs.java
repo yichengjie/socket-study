@@ -54,6 +54,8 @@ public class IoArgs {
      * 从SocketChannel读取数据
      */
     public int readFrom(SocketChannel channel) throws IOException {
+        // 1. 将buffer重置到写模式
+        // 2. 从channel读取数据前将buffer清空并设置好buffer的limit以便读取数据
         startWriting();
         int bytesProduced = 0;
         while (buffer.hasRemaining()) {
@@ -63,6 +65,7 @@ public class IoArgs {
             }
             bytesProduced += len;
         }
+        // 数据读取完成将buffer重置到读取模式
         finishWriting();
         return bytesProduced;
     }

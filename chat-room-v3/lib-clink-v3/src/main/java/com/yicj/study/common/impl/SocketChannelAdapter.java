@@ -106,8 +106,6 @@ public class SocketChannelAdapter implements Sender , Receiver, Closeable {
             } catch (IOException ignored) {
                 CloseUtils.close(SocketChannelAdapter.this);
             }
-
-
         }
     };
 
