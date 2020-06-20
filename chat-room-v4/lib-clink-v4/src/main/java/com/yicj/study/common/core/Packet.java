@@ -1,6 +1,7 @@
 package com.yicj.study.common.core;
 
 import java.io.Closeable;
+import java.io.IOException;
 
 /**
  * 公用的数据封装
@@ -12,15 +13,38 @@ import java.io.Closeable;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public abstract class Packet implements Closeable {
+public abstract class Packet <T extends Closeable> implements Closeable {
     protected byte type ;
-    protected int length ;
+    protected long length ;
+    private T stream ;
 
     public byte type(){
         return type ;
     }
 
-    public int length(){
+    public long length(){
         return length ;
     }
+
+    protected abstract T createStream() ;
+
+    public final T open() {
+        if (stream == null){
+            stream = createStream() ;
+        }
+        return stream;
+    }
+
+    @Override
+    public final void close() throws IOException {
+        if (stream != null){
+            closeStream(stream);
+            stream = null ;
+        }
+    }
+
+    protected void closeStream(T stream) throws IOException {
+        stream.close();
+    }
+
 }

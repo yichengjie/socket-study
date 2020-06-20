@@ -3,6 +3,8 @@ package com.yicj.study.common.box;
 import com.yicj.study.common.core.ReceivePacket;
 import com.yicj.study.common.core.Receiver;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
@@ -14,36 +16,26 @@ import java.io.IOException;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public class StringReceivePacket extends ReceivePacket {
+public class StringReceivePacket extends ReceivePacket<ByteArrayOutputStream> {
 
-    private byte [] buffer ;
-    private int position ;
+    private String string ;
 
-    public StringReceivePacket(int len){
-        buffer = new byte[len] ;
+    public StringReceivePacket(long len){
         length = len ;
     }
 
-    @Override
-    public void save(byte[] bytes, int count) {
-        /**
-         * 参数1：原数组
-         * 参数2：原数组起始位置
-         * ---------------------
-         * 参数3：目标数组
-         * 参数4：目标数组起始位置
-         * 参数5：复制数据长度
-         */
-        System.arraycopy(bytes,0, buffer, position, count);
-        position += count ;
-    }
-
     public String string(){
-        return new String(buffer) ;
+        return string ;
     }
 
     @Override
-    public void close() throws IOException {
+    protected void closeStream(ByteArrayOutputStream stream) throws IOException {
+        super.closeStream(stream);
+        string = new String(stream.toByteArray()) ;
+    }
 
+    @Override
+    protected ByteArrayOutputStream createStream() {
+        return new ByteArrayOutputStream((int) length);
     }
 }

@@ -1,5 +1,7 @@
 package com.yicj.study.common.core;
 
+import java.io.OutputStream;
+
 /**
  * 接收包的定义
  * ClassName: ReceivePacket
@@ -10,11 +12,6 @@ package com.yicj.study.common.core;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public abstract class ReceivePacket extends Packet {
-    /**
-     * 保存数据
-     * @param bytes  数据
-     * @param count  前面的某一部分数据
-     */
-    public abstract void save(byte [] bytes, int count) ;
+public abstract class ReceivePacket<T extends OutputStream> extends Packet<T> {
+
 }

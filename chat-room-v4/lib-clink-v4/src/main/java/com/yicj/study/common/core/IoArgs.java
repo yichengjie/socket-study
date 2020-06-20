@@ -2,8 +2,13 @@ package com.yicj.study.common.core;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.channels.WritableByteChannel;
+import java.util.concurrent.Executors;
 
 /**
  * @title: IO 输出和输入的一个类，主要是完成对ByteBuffer的封装
@@ -15,39 +20,40 @@ import java.nio.channels.SocketChannel;
  **/
 public class IoArgs {
     private int limit = 5;
-    private byte[] byteBuffer = new byte[5];
-    private ByteBuffer buffer = ByteBuffer.wrap(byteBuffer);
+    private ByteBuffer buffer = ByteBuffer.allocate(5) ;
 
     /**
      * 从bytes中读取数据
      */
-    public int readFrom(byte[] bytes, int offset) {
-        int size = Math.min(bytes.length - offset, buffer.remaining());
-        buffer.put(bytes, offset, size);
-        return size;
+    public int readFrom(ReadableByteChannel channel) throws IOException {
+        startWriting();
+        int bytesProduced = 0;
+        while (buffer.hasRemaining()) {
+            int len = channel.read(buffer);
+            if (len < 0) {
+                throw new EOFException();
+            }
+            bytesProduced += len;
+        }
+        // 数据读取完成将buffer重置到读取模式
+        finishWriting();
+        return bytesProduced;
     }
 
     /**
      * 写入数据到bytes中
-     * @param bytes  装数据的buffer
-     * @param offset 从
      * @return
      */
-    public int writeTo(byte[] bytes, int offset) {
-        // byte.length - offset为数组中剩余空间数
-        // buffer.remaining() 为缓存区中还剩余的字节数
-        // 取【字节数组剩余空间长度】与【缓存区剩余字节数】中较小的作为待读取字节数
-        // buffer中可能包含下一个数据包的数组
-        int size = Math.min(bytes.length - offset, buffer.remaining());
-        // 从缓冲区中读取字节到bytes数组中
-        /**
-         * 参数：
-         *   dst - 向其中写入字节的数组
-         *   offset - 要写入的第一个字节在数组中的偏移量；必须为非负且不大于 dst.length
-         *   length - 要写入到给定数组中的字节的最大数量；必须为非负且不大于 dst.length - offset
-         */
-        buffer.get(bytes, offset, size);
-        return size;
+    public int writeTo(WritableByteChannel channel) throws IOException {
+        int bytesProduced = 0;
+        while (buffer.hasRemaining()) {
+            int len = channel.write(buffer);
+            if (len < 0) {
+                throw new EOFException();
+            }
+            bytesProduced += len;
+        }
+        return bytesProduced;
     }
 
     /**
@@ -111,7 +117,9 @@ public class IoArgs {
     }
 
     public void writeLength(int total) {
+        startWriting();
         buffer.putInt(total);
+        finishWriting();
     }
 
     public int readLength() {
@@ -123,9 +131,27 @@ public class IoArgs {
     }
 
 
-    public interface IoArgsEventListener {
-        void onStarted(IoArgs args);
+    /**
+     * IoArgs 提供者、处理者；数据的生产或消费者
+     */
+    public interface IoArgsEventProcessor {
+        /**
+         * 提供一份可消费的IoArgs
+         * @return
+         */
+        IoArgs provideIoArgs() ;
 
-        void onCompleted(IoArgs args);
+        /**
+         * 消费失败时回调
+         * @param args
+         * @param e
+         */
+        void onConsumeFailed(IoArgs args, Exception e) ;
+
+        /**
+         * 消费成功时回调
+         * @param args
+         */
+        void onConsumeCompleted(IoArgs args) ;
     }
 }
