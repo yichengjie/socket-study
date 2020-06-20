@@ -1,6 +1,6 @@
 package com.yicj.study.common.impl.async;
 
-import com.yicj.study.common.box.StringReceivePackage;
+import com.yicj.study.common.box.StringReceivePacket;
 import com.yicj.study.common.core.IoArgs;
 import com.yicj.study.common.core.ReceiveDispatcher;
 import com.yicj.study.common.core.ReceivePacket;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * ClassName: AsyncReceiveDispathcher
+ * ClassName: AsyncReceiveDispatcher
  * Description: TODO(描述)
  * Date: 2020/6/18 22:21
  *
@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public class AsyncReceiveDispathcher implements ReceiveDispatcher {
+public class AsyncReceiveDispatcher implements ReceiveDispatcher {
 
     private final AtomicBoolean isClosed = new AtomicBoolean(false);
     private final Receiver receiver ;
@@ -30,7 +30,7 @@ public class AsyncReceiveDispathcher implements ReceiveDispatcher {
     private int total ;
     private int position ;
 
-    public AsyncReceiveDispathcher(Receiver receiver, ReceivePacketCallback callback) {
+    public AsyncReceiveDispatcher(Receiver receiver, ReceivePacketCallback callback) {
         this.receiver = receiver;
         this.receiver.setReceiveListener(ioArgsEventListener);
         this.callback = callback;
@@ -80,7 +80,7 @@ public class AsyncReceiveDispathcher implements ReceiveDispatcher {
     private void assemblePacket(IoArgs args) {
         if (packetTemp == null){
             int length = args.readLength();
-            packetTemp = new StringReceivePackage(length) ;
+            packetTemp = new StringReceivePacket(length) ;
             buffer = new byte[length] ;
             total = length ;
             position = 0 ;

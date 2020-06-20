@@ -6,7 +6,7 @@ import com.yicj.study.common.core.Receiver;
 import java.io.IOException;
 
 /**
- * ClassName: StringReceivePackage
+ * ClassName: StringReceivePacket
  * Description: TODO(描述)
  * Date: 2020/6/17 21:18
  *
@@ -14,12 +14,12 @@ import java.io.IOException;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public class StringReceivePackage extends ReceivePacket {
+public class StringReceivePacket extends ReceivePacket {
 
     private byte [] buffer ;
     private int position ;
 
-    public StringReceivePackage(int len){
+    public StringReceivePacket(int len){
         buffer = new byte[len] ;
         length = len ;
     }
