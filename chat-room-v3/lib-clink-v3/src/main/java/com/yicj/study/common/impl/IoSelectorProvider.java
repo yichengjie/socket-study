@@ -77,14 +77,11 @@ public class IoSelectorProvider implements IoProvider {
                             }
                             iter.remove();
                         }
-
                     }catch (IOException e){
                         e.printStackTrace();
                     }
                 }
             }
-
-
         } ;
         thread.setPriority(Thread.MAX_PRIORITY);
         thread.start();
