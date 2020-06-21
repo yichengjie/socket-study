@@ -18,6 +18,7 @@
 		<module>chat-room-v2</module>
 		<module>chat-room-v3</module>
 		<module>chat-room-v4</module>
+		<module>chat-room-v5</module>
     </modules>
     <packaging>pom</packaging>
 
