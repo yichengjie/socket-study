@@ -18,12 +18,15 @@ public class Foo {
     private static final String CACHE_DIR = "cache";
 
     public static void main(String[] args) {
-        String property = System.getProperty("user.dir");
-        System.out.println(property);
+//        String property = System.getProperty("user.dir");
+//        System.out.println(property);
+        File server = getCacheDir("server");
+        String absolutePath = server.getAbsolutePath();
+        System.out.println(absolutePath);
     }
 
     public static File getCacheDir(String dir){
-        String path = System.getProperty("usr.dir") + File.separator
+        String path = System.getProperty("user.dir") + File.separator
                 + CACHE_DIR + File.separator +dir;
         File file = new File(path) ;
         if (!file.exists()){

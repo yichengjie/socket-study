@@ -19,6 +19,4 @@ public abstract class SendPacket<T extends InputStream> extends Packet<T> {
     public boolean isCanceled(){
         return isCanceled ;
     }
-
-
 }
