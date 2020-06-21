@@ -2,6 +2,8 @@ package com.yicj.study.server;
 
 import com.yicj.study.common.utils.CloseUtils;
 import com.yicj.study.server.handler.ClientHandler;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -24,16 +26,18 @@ import java.util.concurrent.Executors;
  */
 public class TCPServer implements ClientHandler.ClientHandlerCallback {
     private final int port ;
+    private final File cachePath ;
+    private final ExecutorService forwardingThreadPoolExecutor;
     private ClientListener listener;
     private List<ClientHandler> clientHandlerList = new ArrayList<>() ;
-    private final ExecutorService forwardingThreadPoolExecutor;
     private Selector selector;
     private ServerSocketChannel server ;
 
 
 
-    public TCPServer(int port) {
+    public TCPServer(int port, File cachePath) {
         this.port = port ;
+        this.cachePath = cachePath ;
         this.forwardingThreadPoolExecutor = Executors.newSingleThreadExecutor() ;
     }
 
@@ -136,7 +140,7 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
                             try {
                                 //客户端构建异步线程
                                 ClientHandler clientHandler = new ClientHandler(socketChannel,
-                                        TCPServer.this);
+                                        TCPServer.this, cachePath);
                                 // 添加到列表中
                                 synchronized (TCPServer.this){
                                     clientHandlerList.add(clientHandler);

@@ -15,16 +15,18 @@ import java.io.InputStream;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public class StringSendPacket extends SendPacket<ByteArrayInputStream> {
-    private final byte [] bytes ;
-
+public class StringSendPacket extends BytesSendPacket {
+    /**
+     * 字符串发送时就是Byte数组，所以直接得到Byte数组，并按照Byte的发送方式发送即可
+     * @param msg 字符串
+     */
     public StringSendPacket(String msg) {
-        this.bytes = msg.getBytes();
-        this.length = bytes.length ;
+        super(msg.getBytes());
     }
 
+
     @Override
-    protected ByteArrayInputStream createStream() {
-        return new ByteArrayInputStream(bytes);
+    public byte type() {
+        return TYPE_MEMORY_STRING;
     }
 }

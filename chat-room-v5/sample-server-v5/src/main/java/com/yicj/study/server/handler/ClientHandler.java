@@ -1,6 +1,9 @@
 package com.yicj.study.server.handler;
 
+import com.yicj.study.Foo;
 import com.yicj.study.common.core.Connector;
+import com.yicj.study.common.core.Packet;
+import com.yicj.study.common.core.ReceivePacket;
 import com.yicj.study.common.utils.CloseUtils;
 
 import java.io.*;
@@ -25,10 +28,12 @@ import java.util.concurrent.Executors;
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
 public class ClientHandler extends Connector{
+    private final File cachePath ;
     private final ClientHandlerCallback clientHandlerCallback ;
     private final String clientInfo ;
 
-    public ClientHandler(SocketChannel socketChannel, ClientHandlerCallback clientHandlerCallback) throws IOException {
+    public ClientHandler(SocketChannel socketChannel, ClientHandlerCallback clientHandlerCallback,File cachePath) throws IOException {
+        this.cachePath = cachePath ;
         this.clientHandlerCallback = clientHandlerCallback ;
         this.clientInfo =   socketChannel.getRemoteAddress().toString() ;
         System.out.println("新客户端连接: " + clientInfo);
@@ -54,9 +59,18 @@ public class ClientHandler extends Connector{
     }
 
     @Override
-    protected void onReceiveNewMessage(String str) {
-        super.onReceiveNewMessage(str);
-        clientHandlerCallback.onNewMessageArrived(this,str);
+    protected File createNewReceiveFile() {
+        return Foo.createRandomTemp(cachePath);
+    }
+
+    @Override
+    protected void onReceivedPacket(ReceivePacket packet) {
+        super.onReceivedPacket(packet);
+        if (packet.type() == Packet.TYPE_MEMORY_STRING){
+            String string = (String) packet.entity() ;
+            System.out.println(key.toString() +":" + string);
+            clientHandlerCallback.onNewMessageArrived(this,string);
+        }
     }
 
     public interface ClientHandlerCallback {

@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * ClassName: StringReceivePacket
+ * ClassName: 字符串接收包
  * Description: TODO(描述)
  * Date: 2020/6/17 21:18
  *
@@ -16,26 +16,18 @@ import java.io.IOException;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public class StringReceivePacket extends ReceivePacket<ByteArrayOutputStream> {
-
-    private String string ;
-
-    public StringReceivePacket(long len){
-        length = len ;
-    }
-
-    public String string(){
-        return string ;
+public class StringReceivePacket extends AbsByteArrayReceivePacket<String> {
+    public StringReceivePacket(long len) {
+        super(len);
     }
 
     @Override
-    protected void closeStream(ByteArrayOutputStream stream) throws IOException {
-        super.closeStream(stream);
-        string = new String(stream.toByteArray()) ;
+    protected String buildEntity(ByteArrayOutputStream stream) {
+        return new String(stream.toByteArray());
     }
 
     @Override
-    protected ByteArrayOutputStream createStream() {
-        return new ByteArrayOutputStream((int) length);
+    public byte type() {
+        return TYPE_MEMORY_STRING;
     }
 }

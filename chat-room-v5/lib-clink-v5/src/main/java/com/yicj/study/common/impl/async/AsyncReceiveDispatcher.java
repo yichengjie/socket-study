@@ -1,10 +1,7 @@
 package com.yicj.study.common.impl.async;
 
 import com.yicj.study.common.box.StringReceivePacket;
-import com.yicj.study.common.core.IoArgs;
-import com.yicj.study.common.core.ReceiveDispatcher;
-import com.yicj.study.common.core.ReceivePacket;
-import com.yicj.study.common.core.Receiver;
+import com.yicj.study.common.core.*;
 import com.yicj.study.common.utils.CloseUtils;
 
 import java.io.IOException;
@@ -29,7 +26,7 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
     private final ReceivePacketCallback callback;
 
     private IoArgs ioArgs = new IoArgs();
-    private ReceivePacket<?> packetTemp;
+    private ReceivePacket<?,?> packetTemp;
     private WritableByteChannel packetChannel ;
     private long total;
     private long position;
@@ -77,8 +74,9 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
         if (packetTemp == null) {
             // 发送过来的数据长度
             int length = args.readLength();
+            byte type = length > 200 ? Packet.TYPE_STREAM_FILE : Packet.TYPE_MEMORY_STRING ;
             // 本次发送的数据包
-            packetTemp = new StringReceivePacket(length);
+            packetTemp = callback.onArrivedNewPacket(type, length) ;
             packetChannel = Channels.newChannel(packetTemp.open()) ;
             total = length;
             position = 0;
