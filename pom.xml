@@ -19,6 +19,7 @@
 		<module>chat-room-v3</module>
 		<module>chat-room-v4</module>
 		<module>chat-room-v5</module>
+		<module>chat-room-v6</module>
         <module>hello-world</module>
     </modules>
     <packaging>pom</packaging>
