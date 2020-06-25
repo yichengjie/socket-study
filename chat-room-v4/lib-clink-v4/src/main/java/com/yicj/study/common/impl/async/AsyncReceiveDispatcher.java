@@ -45,10 +45,6 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
         registerReceive();
     }
 
-    @Override
-    public void stop() {
-
-    }
 
     @Override
     public void close() throws IOException {
