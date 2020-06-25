@@ -33,7 +33,7 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
 
     public AsyncReceiveDispatcher(Receiver receiver, ReceivePacketCallback callback) {
         this.receiver = receiver;
-        this.receiver.setReceiveProcessor(this);
+        this.receiver.setReceiveListener(this);
         this.callback = callback;
     }
 

@@ -3,7 +3,7 @@ package com.yicj.study.common.core;
 import java.io.InputStream;
 
 /**
- * 发送包
+ * 发送包定义
  * ClassName: SendPacket
  * Description: TODO(描述)
  * Date: 2020/6/17 21:07
@@ -21,4 +21,11 @@ public abstract class SendPacket<T extends InputStream> extends Packet<T> {
     }
 
 
+    /**
+     * 设置取消发送标记
+     */
+    public void cancel(){
+
+        isCanceled = true ;
+    }
 }
