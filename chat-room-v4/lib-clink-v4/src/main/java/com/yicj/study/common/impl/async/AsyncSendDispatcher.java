@@ -50,17 +50,8 @@ public class AsyncSendDispatcher implements SendDispatcher, IoArgs.IoArgsEventPr
         }
     }
 
-    @Override
-    public void cancel(SendPacket packet) {
-
-    }
-
     private SendPacket takePacket() {
         SendPacket packet = queue.poll();
-        if (packet != null && packet.isCanceled()) {
-            // 已取消，不用发送
-            return takePacket();
-        }
         return packet;
     }
 
@@ -69,17 +60,14 @@ public class AsyncSendDispatcher implements SendDispatcher, IoArgs.IoArgsEventPr
         if (temp != null) {
             CloseUtils.close(temp);
         }
-
         SendPacket packet = packetTemp = takePacket();
         if (packet == null) {
             // 队列为空，取消状态发送
             isSending.set(false);
             return;
         }
-
         total = packet.length();
         position = 0;
-
         sendCurrentPacket();
     }
 

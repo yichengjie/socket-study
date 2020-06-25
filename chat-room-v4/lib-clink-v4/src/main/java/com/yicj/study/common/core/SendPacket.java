@@ -13,10 +13,5 @@ import java.io.InputStream;
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
 public abstract class SendPacket<T extends InputStream> extends Packet<T> {
-    // 是否已取消
-    private boolean isCanceled ;
 
-    public boolean isCanceled(){
-        return isCanceled ;
-    }
 }

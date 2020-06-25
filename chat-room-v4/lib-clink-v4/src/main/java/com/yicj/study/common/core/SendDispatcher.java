@@ -21,10 +21,4 @@ public interface SendDispatcher extends Closeable {
      * @param packet 数据
      */
     void send(SendPacket packet) ;
-
-    /**
-     * 取消发送数据
-     * @param packet 数据
-     */
-    void cancel(SendPacket packet) ;
 }

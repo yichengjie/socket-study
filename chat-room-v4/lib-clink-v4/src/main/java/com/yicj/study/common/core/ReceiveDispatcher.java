@@ -9,9 +9,6 @@ import java.io.Closeable;
 public interface ReceiveDispatcher extends Closeable {
 
     void start() ;
-
-    void stop() ;
-
     // 接收完成时的回调
     interface ReceivePacketCallback{
         void onReceivePacketCompleted(ReceivePacket packet) ;

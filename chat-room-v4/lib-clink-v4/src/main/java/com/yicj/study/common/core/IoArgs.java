@@ -4,10 +4,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SocketChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.*;
 import java.util.concurrent.Executors;
 
 /**
@@ -26,6 +23,16 @@ public class IoArgs {
      * 从bytes中读取数据
      */
     public int readFrom(ReadableByteChannel channel) throws IOException {
+        return doReadFromChannel(channel) ;
+    }
+
+    /**
+     * 从channel中读取数据
+     * @param channel
+     * @return
+     * @throws IOException
+     */
+    private int doReadFromChannel(ReadableByteChannel channel) throws IOException {
         startWriting();
         int bytesProduced = 0;
         while (buffer.hasRemaining()) {
@@ -37,7 +44,7 @@ public class IoArgs {
         }
         // 数据读取完成将buffer重置到读取模式
         finishWriting();
-        return bytesProduced;
+        return bytesProduced ;
     }
 
     /**
@@ -59,22 +66,11 @@ public class IoArgs {
     /**
      * 从SocketChannel读取数据
      */
-    public int readFrom(SocketChannel channel) throws IOException {
-        // 1. 将buffer重置到写模式
-        // 2. 从channel读取数据前将buffer清空并设置好buffer的limit以便读取数据
-        startWriting();
-        int bytesProduced = 0;
-        while (buffer.hasRemaining()) {
-            int len = channel.read(buffer);
-            if (len < 0) {
-                throw new EOFException();
-            }
-            bytesProduced += len;
-        }
-        // 数据读取完成将buffer重置到读取模式
-        finishWriting();
-        return bytesProduced;
-    }
+//    public int readFrom(SocketChannel channel) throws IOException {
+//        // 1. 将buffer重置到写模式
+//        // 2. 从channel读取数据前将buffer清空并设置好buffer的limit以便读取数据
+//        return doReadFromChannel(channel);
+//    }
 
     /**
      * 写数据到SocketChannel

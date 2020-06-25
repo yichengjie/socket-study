@@ -14,13 +14,8 @@ import java.io.IOException;
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
 public abstract class Packet <T extends Closeable> implements Closeable {
-    protected byte type ;
     protected long length ;
     private T stream ;
-
-    public byte type(){
-        return type ;
-    }
 
     public long length(){
         return length ;
