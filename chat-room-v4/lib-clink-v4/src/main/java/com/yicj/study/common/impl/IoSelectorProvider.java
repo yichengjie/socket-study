@@ -237,14 +237,10 @@ public class IoSelectorProvider implements IoProvider {
         // 重点
         // 取消继续对keyOps的监听
         key.interestOps(key.readyOps() & ~keyOps);
-
         Runnable runnable = null;
         try {
             runnable = map.get(key);
-        } catch (Exception ignored) {
-
-        }
-
+        } catch (Exception ignored) {}
         if (runnable != null && !pool.isShutdown()) {
             // 异步调度
             pool.execute(runnable);

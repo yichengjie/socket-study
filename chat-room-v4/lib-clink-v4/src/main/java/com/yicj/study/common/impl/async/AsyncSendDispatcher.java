@@ -85,11 +85,16 @@ public class AsyncSendDispatcher implements SendDispatcher, IoArgs.IoArgsEventPr
     }
 
 
+    /**
+     * 关闭资源并将packet转换到具体的数据类型eg：string
+     * @param isSuccess
+     */
     private void completePacket(boolean isSuccess){
         SendPacket packet = this.packetTemp ;
         if (packet == null){
             return;
         }
+        // close package 的时候，会调用具体packet的closeStream方法
         CloseUtils.close(packet);
         CloseUtils.close(packetChannel);
 

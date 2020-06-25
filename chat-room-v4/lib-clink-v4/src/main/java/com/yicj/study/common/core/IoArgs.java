@@ -29,25 +29,6 @@ public class IoArgs {
      * 从bytes中读取数据
      */
     public int readFrom(ReadableByteChannel channel) throws IOException {
-        return doReadFromChannel(channel) ;
-    }
-
-    /**
-     * 从SocketChannel读取数据
-     */
-//    public int readFrom(SocketChannel channel) throws IOException {
-//        // 1. 将buffer重置到写模式
-//        // 2. 从channel读取数据前将buffer清空并设置好buffer的limit以便读取数据
-//        return doReadFromChannel(channel);
-//    }
-
-    /**
-     * 从channel中读取数据
-     * @param channel
-     * @return
-     * @throws IOException
-     */
-    private int doReadFromChannel(ReadableByteChannel channel) throws IOException {
         startWriting();
         int bytesProduced = 0;
         while (buffer.hasRemaining()) {

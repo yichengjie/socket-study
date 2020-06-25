@@ -42,6 +42,7 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
 
     @Override
     public void start() {
+        // 注册接收数据
         registerReceive();
     }
 
@@ -94,9 +95,12 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
 
     /**
      * 完成数据接收操作
+     * 1. 关闭packet
+     * 2. 将接收到的packet回调到，Connector中注册的receivePacketCallback中
      */
     private void completePacket(boolean isSuccess) {
         ReceivePacket packet = this.packetTemp;
+        // close package 的时候，会调用具体packet的closeStream方法
         CloseUtils.close(packet);
         packetTemp = null ;
         WritableByteChannel channel = this.packetChannel ;
@@ -133,6 +137,7 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
     @Override
     public void onConsumeCompleted(IoArgs args) {
         assemblePacket(args);
+        // 注册继续接收数据
         registerReceive();
     }
 }
