@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEventProcessor {
+public class AsyncReceiveDispatcher implements ReceiveDispatcher, IoArgs.IoArgsEventProcessor {
 
     private final AtomicBoolean isClosed = new AtomicBoolean(false);
 
@@ -134,6 +134,11 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
 
     }
 
+    /**
+     * SocketChannelAdapter中的inputCallback [IoProvider.HandleInputCallback]
+     * 会调用IoArgs.IoArgsEventProcessor的onConsumeCompleted方法
+     * @param args
+     */
     @Override
     public void onConsumeCompleted(IoArgs args) {
         assemblePacket(args);
