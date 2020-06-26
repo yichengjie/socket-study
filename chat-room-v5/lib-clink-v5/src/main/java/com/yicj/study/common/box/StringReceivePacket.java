@@ -1,11 +1,7 @@
 package com.yicj.study.common.box;
 
-import com.yicj.study.common.core.ReceivePacket;
-import com.yicj.study.common.core.Receiver;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 /**
  * ClassName: 字符串接收包

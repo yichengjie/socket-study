@@ -1,11 +1,5 @@
 package com.yicj.study.common.box;
 
-import com.yicj.study.common.core.SendPacket;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
  * ClassName: StringSendPacket
  * Description: TODO(描述)
