@@ -60,22 +60,6 @@ public class IoArgs {
     }
 
 
-
-    /**
-     * 写数据到SocketChannel
-     */
-    public int writeTo(SocketChannel channel) throws IOException {
-        int bytesProduced = 0;
-        while (buffer.hasRemaining()) {
-            int len = channel.write(buffer);
-            if (len < 0) {
-                throw new EOFException();
-            }
-            bytesProduced += len;
-        }
-        return bytesProduced;
-    }
-
     /**
      * 开始写入数据到IoArgs
      */

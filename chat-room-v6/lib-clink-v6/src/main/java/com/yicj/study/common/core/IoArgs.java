@@ -57,41 +57,6 @@ public class IoArgs {
     }
 
     /**
-     * 从SocketChannel读取数据
-     */
-    public int readFrom(SocketChannel channel) throws IOException {
-        // 1. 将buffer重置到写模式
-        // 2. 从channel读取数据前将buffer清空并设置好buffer的limit以便读取数据
-        startWriting();
-        int bytesProduced = 0;
-        while (buffer.hasRemaining()) {
-            int len = channel.read(buffer);
-            if (len < 0) {
-                throw new EOFException();
-            }
-            bytesProduced += len;
-        }
-        // 数据读取完成将buffer重置到读取模式
-        finishWriting();
-        return bytesProduced;
-    }
-
-    /**
-     * 写数据到SocketChannel
-     */
-    public int writeTo(SocketChannel channel) throws IOException {
-        int bytesProduced = 0;
-        while (buffer.hasRemaining()) {
-            int len = channel.write(buffer);
-            if (len < 0) {
-                throw new EOFException();
-            }
-            bytesProduced += len;
-        }
-        return bytesProduced;
-    }
-
-    /**
      * 开始写入数据到IoArgs
      */
     public void startWriting() {
