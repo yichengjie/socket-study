@@ -1,6 +1,7 @@
 package com.yicj.study.common.impl.async;
 
 /**
+ * 用户管理具体package的发送与接收
  * ClassName: AsyncPacketWriter
  * Description: TODO(描述)
  * Date: 2020/6/25 20:05
