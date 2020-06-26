@@ -60,12 +60,17 @@ public class AsyncSendDispatcher implements SendDispatcher {
         return packet;
     }
 
+
+    /**
+     * 从队列中取出新的待发送的packet数据
+     */
     private void sendNextPacket() {
+        //1. 先将之前的packet关闭
         SendPacket temp = packetTemp;
         if (temp != null) {
             CloseUtils.close(temp);
         }
-
+        //2. 从对了中获取新的待发送的packet
         SendPacket packet = packetTemp = takePacket();
         if (packet == null) {
             // 队列为空，取消状态发送
@@ -73,6 +78,7 @@ public class AsyncSendDispatcher implements SendDispatcher {
             return;
         }
 
+        //准备发送
         total = packet.length();
         position = 0;
 
@@ -86,6 +92,7 @@ public class AsyncSendDispatcher implements SendDispatcher {
         args.startWriting();
 
         if (position >= total) {
+            // 从队列中取出待发送的packet数据
             sendNextPacket();
             return;
         } else if (position == 0) {

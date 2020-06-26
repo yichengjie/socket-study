@@ -63,6 +63,7 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher {
         CloseUtils.close(this);
     }
 
+
     private void registerReceive() {
         try {
             receiver.receiveAsync(ioArgs);
@@ -73,6 +74,7 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher {
 
 
     /**
+     *
      * 解析数据到Packet
      */
     private void assemblePacket(IoArgs args) {

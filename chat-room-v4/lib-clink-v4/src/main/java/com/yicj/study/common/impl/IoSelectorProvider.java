@@ -177,16 +177,13 @@ public class IoSelectorProvider implements IoProvider {
                                                   int registerOps, AtomicBoolean locker,
                                                   HashMap<SelectionKey, Runnable> map,
                                                   Runnable runnable) {
-
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (locker) {
             // 设置锁定状态
             locker.set(true);
-
             try {
                 // 唤醒当前的selector，让selector不处于select()状态
                 selector.wakeup();
-
                 SelectionKey key = null;
                 if (channel.isRegistered()) {
                     // 查询是否已经注册过
@@ -195,14 +192,13 @@ public class IoSelectorProvider implements IoProvider {
                         key.interestOps(key.readyOps() | registerOps);
                     }
                 }
-
+                // channel没有注册过，或者在当前的selector上没有注册过
                 if (key == null) {
                     // 注册selector得到Key
                     key = channel.register(selector, registerOps);
                     // 注册回调
                     map.put(key, runnable);
                 }
-
                 return key;
             } catch (ClosedChannelException e) {
                 return null;
