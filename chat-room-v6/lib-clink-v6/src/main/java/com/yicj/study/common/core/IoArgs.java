@@ -123,10 +123,27 @@ public class IoArgs {
     }
 
 
+    /**
+     *
+     * @param size 想要填充数据的长度
+     * @return 真实填充数据的长度
+     */
     public int fillEmpty(int size) {
         int fillSize = Math.min(size, buffer.remaining()) ;
         buffer.position(buffer.position() + fillSize) ;
         return fillSize ;
+    }
+
+    /**
+     * 清空一部分数据(不读取一部分数据的操作)
+     * 与fillEmpty的作用完全一样
+     * @param size
+     * @return
+     */
+    public int setEmpty(int size) {
+        int emptySize = Math.min(size, buffer.remaining()) ;
+        buffer.position(buffer.position() + emptySize) ;
+        return emptySize ;
     }
 
 

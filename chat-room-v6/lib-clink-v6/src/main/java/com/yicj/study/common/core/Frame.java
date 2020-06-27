@@ -86,4 +86,6 @@ public abstract  class Frame {
     // 64Mb   64KB 1024+1  6
     //下一帧
     public abstract Frame nextFrame() ;
+
+    public abstract int getConsumableLength();
 }

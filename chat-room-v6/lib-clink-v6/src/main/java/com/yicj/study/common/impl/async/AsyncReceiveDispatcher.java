@@ -1,15 +1,12 @@
 package com.yicj.study.common.impl.async;
 
-import com.yicj.study.common.box.StringReceivePacket;
 import com.yicj.study.common.core.*;
 import com.yicj.study.common.utils.CloseUtils;
-
 import java.io.IOException;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * receiver的注册及数据的调度
  * ClassName: AsyncReceiveDispatcher
  * Description: TODO(描述)
  * Date: 2020/6/18 22:21
@@ -18,18 +15,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 修改记录
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
-public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEventProcessor {
+public class AsyncReceiveDispatcher
+        implements ReceiveDispatcher,IoArgs.IoArgsEventProcessor, AsyncPacketWriter.PacketProvider {
 
     private final AtomicBoolean isClosed = new AtomicBoolean(false);
-
     private final Receiver receiver;
     private final ReceivePacketCallback callback;
-
-    private IoArgs ioArgs = new IoArgs();
-    private ReceivePacket<?,?> packetTemp;
-    private WritableByteChannel packetChannel ;
-    private long total;
-    private long position;
+    private final AsyncPacketWriter writer =new AsyncPacketWriter(this);
 
     public AsyncReceiveDispatcher(Receiver receiver, ReceivePacketCallback callback) {
         this.receiver = receiver;
@@ -50,7 +42,7 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
     @Override
     public void close() throws IOException {
         if (isClosed.compareAndSet(false, true)) {
-            completePacket(false);
+            writer.close() ;
         }
     }
 
@@ -58,6 +50,9 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
         CloseUtils.close(this);
     }
 
+    /**
+     * 继续注册接收的操作
+     */
     private void registerReceive() {
         try {
             receiver.postReceiveAsync();
@@ -66,75 +61,36 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher,IoArgs.IoArgsEv
         }
     }
 
-
-    /**
-     * 解析数据到Packet
-     */
-    private void assemblePacket(IoArgs args) {
-        if (packetTemp == null) {
-            // 发送过来的数据长度
-            int length = args.readLength();
-            byte type = length > 200 ? Packet.TYPE_STREAM_FILE : Packet.TYPE_MEMORY_STRING ;
-            // 本次发送的数据包
-            packetTemp = callback.onArrivedNewPacket(type, length) ;
-            packetChannel = Channels.newChannel(packetTemp.open()) ;
-            total = length;
-            position = 0;
-        }
-        try {
-            int count = args.writeTo(packetChannel);
-            position += count;
-            // 检查是否已完成一份Packet接收
-            if (position == total) {
-                completePacket(true);
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-            completePacket(false);
-        }
-    }
-
-    /**
-     * 完成数据接收操作
-     */
-    private void completePacket(boolean isSuccess) {
-        ReceivePacket packet = this.packetTemp;
-        CloseUtils.close(packet);
-        packetTemp = null ;
-        WritableByteChannel channel = this.packetChannel ;
-        CloseUtils.close(channel);
-        packetChannel = null ;
-        if (packet != null){
-            callback.onReceivePacketCompleted(packet);
-        }
-    }
-
-
     @Override
     public IoArgs provideIoArgs() {
-        IoArgs args = ioArgs ;
-        int receiveSize;
-        if (packetTemp == null) {
-            // ioArgs 首次接收数据的buffer长度设置为4
-            receiveSize = 4;
-        } else {
-            // ioArgus非首次接收数据时
-            // total - position为数据包剩余总字节数，与args的总容量比较大小，取较小值
-            receiveSize = (int) Math.min(total - position, args.capacity());
-        }
-        // 设置本次接收数据大小
-        args.limit(receiveSize);
-        return args ;
+        return writer.takeIoArgs() ;
     }
 
+    //IoArgs.IoArgsEventProcessor
     @Override
     public void onConsumeFailed(IoArgs args, Exception e) {
 
     }
 
+    //IoArgs.IoArgsEventProcessor
     @Override
     public void onConsumeCompleted(IoArgs args) {
-        assemblePacket(args);
+        do {
+            writer.consumeIoArgs(args) ;
+        }while (args.remained()) ;
         registerReceive();
+    }
+
+    //AsyncPacketWriter.PacketProvider
+    @Override
+    public ReceivePacket takePacket(byte type, long length, byte[] headerInfo) {
+        return callback.onArrivedNewPacket(type, length) ;
+    }
+
+    //AsyncPacketWriter.PacketProvider
+    @Override
+    public void completedPacket(ReceivePacket packet, boolean isSuccess) {
+        CloseUtils.close(packet);
+        callback.onReceivePacketCompleted(packet);
     }
 }
