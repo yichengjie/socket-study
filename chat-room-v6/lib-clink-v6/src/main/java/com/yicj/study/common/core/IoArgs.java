@@ -54,7 +54,7 @@ public class IoArgs {
     }
 
     /**
-     * 从bytes中读取数据
+     * 从channel中读取数据到bytes中
      */
     public int readFrom(ReadableByteChannel channel) throws IOException {
         int bytesProduced = 0;
@@ -82,6 +82,23 @@ public class IoArgs {
             }
             bytesProduced += len;
         }
+        return bytesProduced;
+    }
+
+    /**
+     * 从SocketChannel读取数据
+     */
+    public int readFrom(SocketChannel channel) throws IOException {
+        startWriting();
+        int bytesProduced = 0;
+        while (buffer.hasRemaining()) {
+            int len = channel.read(buffer);
+            if (len < 0) {
+                throw new EOFException();
+            }
+            bytesProduced += len;
+        }
+        finishWriting();
         return bytesProduced;
     }
 

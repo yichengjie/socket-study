@@ -49,7 +49,6 @@ public class SocketChannelAdapter implements Sender , Receiver, Closeable {
         if (isClosed.get()) {
             throw new IOException("Current channel is closed!");
         }
-
         return ioProvider.registerInput(channel, inputCallback);
     }
 
@@ -89,7 +88,6 @@ public class SocketChannelAdapter implements Sender , Receiver, Closeable {
             }
             IoArgs.IoArgsEventProcessor processor = receiveIoEventProcessor;
             IoArgs args = processor.provideIoArgs();
-
             try {
                 if (args == null) {
                     processor.onConsumeFailed(null, new IOException("ProvideIoArgs is null."));
