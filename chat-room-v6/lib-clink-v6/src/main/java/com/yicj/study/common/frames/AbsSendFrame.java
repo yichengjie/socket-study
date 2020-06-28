@@ -17,6 +17,7 @@ public abstract class AbsSendFrame extends Frame {
      */
     public AbsSendFrame(int length, byte type, byte flag, short identifier) {
         super(length, type, flag, identifier);
+        bodyRemaining = length;
     }
 
     /**
