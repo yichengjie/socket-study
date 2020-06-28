@@ -24,6 +24,7 @@ public class ReceiveHeaderFrame extends AbsReceiveFrame {
                 | (((long) body[4]) & 0xFFL);
     }
 
+    // 文件，字符串，等
     public byte getPacketType() {
         return body[5];
     }

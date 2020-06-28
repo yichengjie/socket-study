@@ -49,10 +49,13 @@ public class AsyncPacketWriter implements Closeable {
      * @param args
      */
     synchronized void consumeIoArgs(IoArgs args) {
+        // 如果接收帧的第一次数据，则创建一个新的帧并缓存，
+        // 首次接收某帧的数据时frameTemp为null
         if (frameTemp ==null){
             Frame temp ;
             do {
                 temp = buildNewFrame(args) ;
+                // 如果是取消帧则buildNewFrame返回null，如果args还有数据则继续构建帧
             }while (temp == null && args.remained()) ;
             if (temp ==null){
                 return;
@@ -63,18 +66,27 @@ public class AsyncPacketWriter implements Closeable {
             }
         }
         Frame currentFrame = frameTemp ;
+
         do {
             try {
+                // 如果当前这一帧数据接收完成，则handle返回true（当前帧剩余可读长度为0）
+                // false: 如果args还有数据则继续读取否则退出循环
+                // true: 表示当前帧数据读取完成，进入if判断内部
                 if (currentFrame.handle(args)){
                     if (currentFrame instanceof ReceiveHeaderFrame){
+                        // 如果是首帧，获取packet类型
                         ReceiveHeaderFrame headerFrame = (ReceiveHeaderFrame)currentFrame ;
+                        // 当一个新的数据包到来的时候，创建一个新packet
                         ReceivePacket packet = provider.takePacket(headerFrame.getPacketType(),
                                 headerFrame.getPacketLength(),
                                 headerFrame.getPacketHeaderInfo());
+                        // 将packet放入到缓冲中
                         appendNewPacket(headerFrame.getBodyIdentifier(), packet) ;
                     }else if (currentFrame instanceof ReceiveEntityFrame){
+                        // 如果接收的是数据帧，则将数据帧数据保存起来
                         completeEntityFrame((ReceiveEntityFrame) currentFrame) ;
                     }
+                    //当前帧数据接收完成准备接收下一帧数据
                     frameTemp = null ;
                     break;
                 }
@@ -84,6 +96,8 @@ public class AsyncPacketWriter implements Closeable {
         }while (args.remained()) ;
     }
 
+
+    //当前这一数据帧接收完成
     private void completeEntityFrame(ReceiveEntityFrame frame) {
         synchronized (packetMap){
             short identifier = frame.getBodyIdentifier();
@@ -148,7 +162,6 @@ public class AsyncPacketWriter implements Closeable {
 
     interface PacketProvider{
         ReceivePacket takePacket(byte type, long length, byte[] headerInfo) ;
-
         /**
          *
          * @param packet 接收packet

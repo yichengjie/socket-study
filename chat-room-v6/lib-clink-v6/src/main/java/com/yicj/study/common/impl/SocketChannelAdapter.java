@@ -92,7 +92,8 @@ public class SocketChannelAdapter implements Sender , Receiver, Closeable {
                 if (args == null) {
                     processor.onConsumeFailed(null, new IOException("ProvideIoArgs is null."));
                 } else if (args.readFrom(channel) > 0) {
-                    // 读取完成回调
+                    //1. 从channel中读取数据到args的buffer中
+                    //2. 将args的buffer提供给processor消费
                     processor.onConsumeCompleted(args);
                 } else {
                     processor.onConsumeFailed(args, new IOException("Cannot read any data!"));

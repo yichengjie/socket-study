@@ -80,6 +80,8 @@ public abstract class Connector implements Closeable ,SocketChannelAdapter.OnCha
 
     protected abstract File createNewReceiveFile() ;
 
+
+
     private ReceiveDispatcher.ReceivePacketCallback receivePacketCallback = new ReceiveDispatcher.ReceivePacketCallback() {
         @Override
         public ReceivePacket<?, ?> onArrivedNewPacket(byte type, long length) {
