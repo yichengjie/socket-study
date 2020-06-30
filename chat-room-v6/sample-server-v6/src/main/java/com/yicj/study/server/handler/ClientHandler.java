@@ -28,29 +28,29 @@ import java.util.concurrent.Executors;
  * @version 产品版本信息 yyyy-mm-dd 姓名(邮箱) 修改信息
  */
 public class ClientHandler extends Connector{
-    private final File cachePath ;
-    private final ClientHandlerCallback clientHandlerCallback ;
-    private final String clientInfo ;
+    private final File cachePath;
+    private final ClientHandlerCallback clientHandlerCallback;
+    private final String clientInfo;
 
-    public ClientHandler(SocketChannel socketChannel, ClientHandlerCallback clientHandlerCallback,File cachePath) throws IOException {
-        this.cachePath = cachePath ;
-        this.clientHandlerCallback = clientHandlerCallback ;
-        this.clientInfo =   socketChannel.getRemoteAddress().toString() ;
-        System.out.println("新客户端连接: " + clientInfo);
+    public ClientHandler(SocketChannel socketChannel, ClientHandlerCallback clientHandlerCallback, File cachePath) throws IOException {
+        this.clientHandlerCallback = clientHandlerCallback;
+        this.clientInfo = socketChannel.getRemoteAddress().toString();
+        this.cachePath = cachePath;
+
+
+        System.out.println("新客户端连接：" + clientInfo);
+
         setup(socketChannel);
     }
 
+    public String getClientInfo(){
+        return clientInfo;
+    }
 
     public void exit() {
         CloseUtils.close(this);
-        System.out.println("客户端已退出: " + clientInfo);
+        System.out.println("客户端已退出：" + clientInfo);
     }
-
-    public void exitBySelf(){
-        exit();
-        this.clientHandlerCallback.onSelfClosed(this);
-    }
-
 
     @Override
     public void onChannelClosed(SocketChannel channel) {
@@ -66,17 +66,22 @@ public class ClientHandler extends Connector{
     @Override
     protected void onReceivedPacket(ReceivePacket packet) {
         super.onReceivedPacket(packet);
-        if (packet.type() == Packet.TYPE_MEMORY_STRING){
-            String string = (String) packet.entity() ;
-            System.out.println(key.toString() +":" + string);
-            clientHandlerCallback.onNewMessageArrived(this,string);
+        if (packet.type() == Packet.TYPE_MEMORY_STRING) {
+            String string = (String) packet.entity();
+            clientHandlerCallback.onNewMessageArrived(this, string);
         }
+    }
+
+    private void exitBySelf() {
+        exit();
+        clientHandlerCallback.onSelfClosed(this);
     }
 
     public interface ClientHandlerCallback {
         // 自身关闭通知
-        void onSelfClosed(ClientHandler handler) ;
-        // 收到消息通知
-        void onNewMessageArrived(ClientHandler handler, String msg) ;
+        void onSelfClosed(ClientHandler handler);
+
+        // 收到消息时通知
+        void onNewMessageArrived(ClientHandler handler, String msg);
     }
 }

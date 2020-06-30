@@ -15,6 +15,7 @@ import java.util.UUID;
  */
 public class Foo {
 
+    public static final String COMMAND_EXIT = "00bye00";
     private static final String CACHE_DIR = "cache";
 
     public static void main(String[] args) {
