@@ -75,9 +75,12 @@ public class AsyncReceiveDispatcher
     //IoArgs.IoArgsEventProcessor
     @Override
     public void onConsumeCompleted(IoArgs args) {
+        if (isClosed.get()){
+            return;
+        }
         do {
             writer.consumeIoArgs(args) ;
-        }while (args.remained()) ;
+        }while (args.remained() && !isClosed.get()) ;
         registerReceive();
     }
 

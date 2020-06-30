@@ -104,6 +104,9 @@ public class AsyncPacketWriter implements Closeable {
             //当前这一帧的长度
             int length = frame.getBodyLength();
             PacketModel model = packetMap.get(identifier);
+            if (model==null){
+                return;
+            }
             model.unReceivedLength -= length ;
             if (model.unReceivedLength <=0){
                 provider.completedPacket(model.packet, true);
