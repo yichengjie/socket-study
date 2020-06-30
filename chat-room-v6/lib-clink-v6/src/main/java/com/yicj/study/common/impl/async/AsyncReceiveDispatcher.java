@@ -63,7 +63,9 @@ public class AsyncReceiveDispatcher
 
     @Override
     public IoArgs provideIoArgs() {
-        return writer.takeIoArgs() ;
+        IoArgs ioArgs = writer.takeIoArgs();
+        ioArgs.startWriting();
+        return ioArgs ;
     }
 
     //IoArgs.IoArgsEventProcessor
@@ -78,6 +80,9 @@ public class AsyncReceiveDispatcher
         if (isClosed.get()){
             return;
         }
+        // 消费数据之前标示args数据填充完成
+        // 改变未可读取数据状态
+        args.finishWriting();
         do {
             writer.consumeIoArgs(args) ;
         }while (args.remained() && !isClosed.get()) ;
